@@ -1,6 +1,6 @@
 {
   "name": "fcc-random-quote-machine",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -15,6 +15,8 @@
     "redux": "^4.0.5"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -40,6 +42,14 @@
     "css",
     "react"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cat-street/random-quote-machine.git"
+  },
   "author": "Andrey Kudryavtsev <catlogic@ya.ru>",
-  "license": "ISC"
+  "license": "ISC",
+  "homepage": "https://cat-street.github.io/random-quote-machine",
+  "devDependencies": {
+    "gh-pages": "^3.1.0"
+  }
 }
