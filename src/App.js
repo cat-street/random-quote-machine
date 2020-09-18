@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Provider, connect } from 'react-redux';
 import { createStore } from 'redux';
 import './App.scss';
