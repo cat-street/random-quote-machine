@@ -1,28 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
+import { Provider, connect } from 'react-redux';
+import { createStore } from 'redux';
 import './App.scss';
 import 'normalize.css';
 
-function App() {
-  const [quote, setQuote] = useState({});
-
-  async function randomQuote() {
-    const response = await fetch('https://api.quotable.io/random');
-    const data = await response.json();
-    setQuote({content: data.content, author: data.author});
-  }
+function App({data, setQuote}) {
+  const randomQuote = useCallback(
+    async function() {
+      try {
+        const response = await fetch('https://api.quotable.io/random');
+        const data = await response.json();
+        setQuote({ content: data.content, author: data.author });
+      }
+      catch (error) {
+        console.error(error);
+        setQuote({ content: error.message, author: 'Critical error' });
+      }
+    },
+    [setQuote],
+  )
 
   useEffect(() => {
     randomQuote();
-  }, []);
+  }, [randomQuote]);
 
   return (
     <section id="quote-box">
       <blockquote id="quote">
-        <p id="text">
-          {quote.content}
-        </p>
-        <cite id="author">{quote.author}</cite>
-        <TwitterButton quote={`"${quote.content}"%0D~ ${quote.author}`} />
+        <p id="text">{!!data && data.content}</p>
+        <cite id="author">{!!data && data.author}</cite>
+        <TwitterButton quote={`"${data.content}"%0D~ ${data.author}`} />
         <button type="button" id="new-quote" onClick={randomQuote}>
           New quote
         </button>
@@ -33,7 +40,12 @@ function App() {
 
 function TwitterButton(props) {
   return (
-    <a href={`https://twitter.com/intent/tweet?text=${props.quote}`} target="_blank" rel="noopener noreferrer" id="tweet-quote">
+    <a
+      href={`https://twitter.com/intent/tweet?text=${props.quote}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      id="tweet-quote"
+    >
       <svg
         id="twitter-logo"
         xmlns="http://www.w3.org/2000/svg"
@@ -45,4 +57,46 @@ function TwitterButton(props) {
   );
 }
 
-export default App;
+function AppWrapper() {
+  const SET = 'SET';
+
+  const setQuote = (quote) => {
+    return {
+      type: SET,
+      quote,
+    };
+  };
+
+  const quoteReducer = (state = {}, action) => {
+    if (action.type === SET) {
+      return action.quote;
+    } else return state;
+  };
+
+  const store = createStore(quoteReducer);
+
+  const mapStateToProps = (state) => {
+    return { data: state };
+  };
+
+  const mapDispatchToProps = (dispatch) => {
+    return {
+      setQuote: (quote) => {
+        dispatch(setQuote(quote));
+      },
+    };
+  };
+
+  const Container = connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(App);
+
+  return (
+    <Provider store={store}>
+      <Container />
+    </Provider>
+  );
+}
+
+export default AppWrapper;
