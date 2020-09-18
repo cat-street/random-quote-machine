@@ -4,25 +4,20 @@ import { createStore } from 'redux';
 import './App.scss';
 import 'normalize.css';
 
-function App({data, setQuote}) {
+function App({ data, setQuote }) {
   const randomQuote = useCallback(
-    async function() {
+    async function () {
       try {
         const response = await fetch('https://api.quotable.io/random');
         const data = await response.json();
         setQuote({ content: data.content, author: data.author });
-      }
-      catch (error) {
+      } catch (error) {
         console.error(error);
         setQuote({ content: error.message, author: 'Critical error' });
       }
     },
-    [setQuote],
-  )
-
-  useEffect(() => {
-    randomQuote();
-  }, [randomQuote]);
+    [setQuote]
+  );
 
   return (
     <section id="quote-box">
@@ -67,7 +62,13 @@ function AppWrapper() {
     };
   };
 
-  const quoteReducer = (state = {}, action) => {
+  const quoteReducer = (
+    state = {
+      content: 'Do more than dream: work.',
+      author: 'William Arthur Ward',
+    },
+    action
+  ) => {
     if (action.type === SET) {
       return action.quote;
     } else return state;
@@ -87,10 +88,7 @@ function AppWrapper() {
     };
   };
 
-  const Container = connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(App);
+  const Container = connect(mapStateToProps, mapDispatchToProps)(App);
 
   return (
     <Provider store={store}>

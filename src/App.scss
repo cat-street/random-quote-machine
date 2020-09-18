@@ -79,10 +79,6 @@ $buttonShift: .4em;
   font-style: normal;
   margin-bottom: .4em;
 
-  &::before {
-    content: '~ ';
-  }
-
   @include atSmall() {
     font-size: $fontSize * .6;
     margin-bottom: 1.6em;
