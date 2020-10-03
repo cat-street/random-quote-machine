@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Provider, connect } from 'react-redux';
 import { createStore } from 'redux';
 import './App.scss';
@@ -19,11 +19,23 @@ function App({ data, setQuote }) {
     [setQuote]
   );
 
+  useEffect(() => {
+    randomQuote();
+  }, [randomQuote]);
+
   return (
     <section id="quote-box">
       <blockquote id="quote">
-        <p id="text">{!!data && data.content}</p>
-        <cite id="author">{!!data && data.author}</cite>
+        {
+          (data === {} ? (
+            <div className="loader">Loading...</div>
+          ) : (
+            <>
+              <p id="text">{data && data.content}</p>
+              <cite id="author">{data && data.author}</cite>
+            </>
+          ))
+        }
         <TwitterButton quote={`"${data.content}"%0D~ ${data.author}`} />
         <button type="button" id="new-quote" onClick={randomQuote}>
           New quote
@@ -62,13 +74,7 @@ function AppWrapper() {
     };
   };
 
-  const quoteReducer = (
-    state = {
-      content: 'Do more than dream: work.',
-      author: 'William Arthur Ward',
-    },
-    action
-  ) => {
+  const quoteReducer = (state = {}, action) => {
     if (action.type === SET) {
       return action.quote;
     } else return state;
