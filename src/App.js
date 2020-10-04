@@ -23,11 +23,8 @@ function App({ data, setQuote }) {
 
   useEffect(() => {
     randomQuote();
-  }, [randomQuote]);
-
-  useEffect(() => {
     quoteClass.current = 'active';
-  }, [data]);
+  }, [randomQuote]);
 
   return (
     <section id="quote-box" className={quoteClass.current}>
