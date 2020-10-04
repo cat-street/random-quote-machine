@@ -1,19 +1,21 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { Provider, connect } from 'react-redux';
 import { createStore } from 'redux';
 import './App.scss';
 import 'normalize.css';
 
 function App({ data, setQuote }) {
+  let quoteClass = useRef('hidden');
+
   const randomQuote = useCallback(
     async function () {
       try {
         const response = await fetch('https://api.quotable.io/random');
-        const data = await response.json();
-        setQuote({ content: data.content, author: data.author });
+        const fetchData = await response.json();
+        await setQuote({ content: fetchData.content, author: fetchData.author });
       } catch (error) {
         console.error(error);
-        setQuote({ content: error.message, author: 'Critical error' });
+        await setQuote({ content: error.message, author: 'Critical error' });
       }
     },
     [setQuote]
@@ -23,19 +25,15 @@ function App({ data, setQuote }) {
     randomQuote();
   }, [randomQuote]);
 
+  useEffect(() => {
+    quoteClass.current = 'active';
+  }, [data]);
+
   return (
-    <section id="quote-box">
+    <section id="quote-box" className={quoteClass.current}>
       <blockquote id="quote">
-        {
-          (data === {} ? (
-            <div className="loader">Loading...</div>
-          ) : (
-            <>
-              <p id="text">{data && data.content}</p>
-              <cite id="author">{data && data.author}</cite>
-            </>
-          ))
-        }
+        <p id="text">{data && data.content}</p>
+        <cite id="author">{data && data.author}</cite>
         <TwitterButton quote={`"${data.content}"%0D~ ${data.author}`} />
         <button type="button" id="new-quote" onClick={randomQuote}>
           New quote
